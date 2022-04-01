@@ -1,0 +1,23 @@
+{
+  "name": "spi_controller",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoeyDeSmet/Spi_controller.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JoeyDeSmet/Spi_controller/issues"
+  },
+  "homepage": "https://github.com/JoeyDeSmet/Spi_controller#readme",
+  "dependencies": {
+    "rpi-gpio": "^2.1.7",
+    "spi-device": "^3.1.2"
+  }
+}
