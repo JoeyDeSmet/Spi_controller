@@ -1,15 +1,54 @@
-const spi = require('spi-device');
-const gpio = require("rpi-gpio").promise;
+import Lannooleaf from './Lannooleaf.js'
+import Color from './Color.js'
 
-const Lannooleaf = spi.open(0, 0, err => {
-  if (err) throw err;
-});
+import Graph from './graph.js';
 
-async function main() {
+const red = new Color(50, 0, 0);
+const green = new Color(0, 50, 0);
+const blue = new Color(0, 0, 50);
+const off = new Color(0, 0, 0);
 
-  await gpio.setup(8, gpio.DIR_OUT).catch(error => { console.error(error); });
-  
+const controller = new Lannooleaf();
+const graph = new Graph();
 
+await controller.Init();
+
+// await controller.wake();
+
+await controller.getAdjList(graph);
+
+// Set all led to a random value
+let units = Array.from(graph.map.keys());
+for (var i = 0; i < units.length; i++) {
+  let string = [];
+  for (var led = 0; led < 16; led++) {
+    string.push(new Color(Math.floor(Math.random() * 128), Math.floor(Math.random() * 128), Math.floor(Math.random() * 128)));
+  }
+  await controller.setLedString(graph.map.get(units[i]).address, string);
+  await sleep(33);
 }
 
-main();
+await sleep(2000);
+await controller.setAll(off);
+
+for (var x = 0; x < 100; x++) {
+  for (var i = 0; i < units.length; i++) {
+    await controller.setAll(off);
+    await sleep(1);
+    for (var led = 0; led < 16; led++) {
+      await controller.setLed(units[i], led, new Color(Math.floor(Math.random() * 128), Math.floor(Math.random() * 128), Math.floor(Math.random() * 128)));
+      await sleep(33);
+    }
+  }
+}
+
+console.log("destroying");
+controller.Destroy(error => {
+  if (error) console.log(error);
+});
+
+async function sleep(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
