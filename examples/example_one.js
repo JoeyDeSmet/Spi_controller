@@ -1,5 +1,5 @@
-import Lannooleaf from './Lannooleaf.js'
-import Color from './Color.js'
+import Lannooleaf from './src/Lannooleaf.js'
+import Color from './src/Color.js'
 
 import Graph from './graph.js';
 
@@ -12,8 +12,6 @@ const controller = new Lannooleaf();
 const graph = new Graph();
 
 await controller.Init();
-
-// await controller.wake();
 
 await controller.getAdjList(graph);
 

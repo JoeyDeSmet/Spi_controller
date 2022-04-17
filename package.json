@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "wake": "node ./src/wake.js",
+    "example_one": "node ./src/example_one.js"
   },
   "repository": {
     "type": "git",
