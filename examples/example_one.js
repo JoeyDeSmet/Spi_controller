@@ -1,7 +1,4 @@
-import Lannooleaf from '../lib/Lannooleaf.js';
-import Color from '../lib/Color.js';
-import Graph from '../lib/Graph.js';
-
+import Lannooleaf from '../lib/Lannooleaf'
 const off = new Color(0, 0, 0);
 
 const controller = new Lannooleaf();
