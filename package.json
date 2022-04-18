@@ -7,15 +7,15 @@
     "onoff": "^6.0.3",
     "spi-device": "^3.1.2"
   },
-  "name": "spi_controller",
+  "name": "lannooleaf_controller",
   "description": "Module to send command over spi to Lannooleaf.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "directories": {
     "example": "examples"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "npx tsc",
     "prepare": "npm run build"
   },
   "repository": {
