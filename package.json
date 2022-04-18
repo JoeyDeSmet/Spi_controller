@@ -30,5 +30,6 @@
   "bugs": {
     "url": "https://github.com/JoeyDeSmet/Spi_controller/issues"
   },
-  "homepage": "https://github.com/JoeyDeSmet/Spi_controller#readme"
+  "homepage": "https://github.com/JoeyDeSmet/Spi_controller#readme",
+  "type": "module"
 }
