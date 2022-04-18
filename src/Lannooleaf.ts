@@ -1,4 +1,4 @@
-import * as spi from 'spi-device';
+import spi from 'spi-device';
 import { Gpio } from 'onoff';
 
 import * as lannooleafconst from './LannooleafConsts.js';

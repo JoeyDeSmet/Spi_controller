@@ -7,9 +7,9 @@
     "onoff": "^6.0.3",
     "spi-device": "^3.1.2"
   },
-  "name": "lannooleaf_controller",
+  "name": "lannooleaf_spi_controller",
   "description": "Module to send command over spi to Lannooleaf.",
-  "version": "1.1.2",
+  "version": "0.0.1",
   "main": "./lib/Lannooleaf.js",
   "types": "./lib/Lannooleaf.d.ts",
   "directories": {
