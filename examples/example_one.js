@@ -1,17 +1,13 @@
-import Lannooleaf from '../lib/Lannooleaf'
-import Color from '../lib/Color'
+import Lannooleaf from '../lib/Lannooleaf';
+import Color from '../lib/Color';
+import Graph from '../lib/Graph';
 
-const red = new Color(50, 0, 0);
-const green = new Color(0, 50, 0);
-const blue = new Color(0, 0, 50);
 const off = new Color(0, 0, 0);
 
 const controller = new Lannooleaf();
-const graph = new Graph();
-
 await controller.Init();
 
-await controller.getAdjList(graph);
+const graph = await controller.GetAdjList();
 
 // Set all led to a random value
 let units = Array.from(graph.map.keys());
