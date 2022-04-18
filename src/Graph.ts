@@ -10,10 +10,10 @@ class Leaf {
     this.address = address;
     this.adj = new Map<side, Leaf>();
   }
-
+  
 }
 
-export default class Graph {
+export class Graph {
 
   public map: Map<i2c_address, Leaf>;
 

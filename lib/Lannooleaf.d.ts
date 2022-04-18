@@ -1,12 +1,13 @@
-import Color from './Color.js';
+import { Color } from './Color.js';
 import { ColorString } from './Color.js';
-import Graph from './Graph.js';
-export default class Lannooleaf {
+import { Graph } from './Graph.js';
+export declare class Lannooleaf {
     private spi_controller;
     private cs;
     constructor();
     Init(): Promise<void>;
     Destroy(): Promise<void>;
+    Wake(): Promise<void>;
     HelloMessage(): Promise<string>;
     GetAdjList(): Promise<Graph>;
     SetLed(address: number, led: number, color: Color): Promise<void>;

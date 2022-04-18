@@ -2,11 +2,11 @@ import spi from 'spi-device';
 import { Gpio } from 'onoff';
 
 import * as lannooleafconst from './LannooleafConsts.js';
-import Color from './Color.js';
+import { Color } from './Color.js';
 import { ColorString } from './Color.js';
-import Graph from './Graph.js';
+import { Graph } from './Graph.js';
 
-export default class Lannooleaf {
+export class Lannooleaf {
 
   private spi_controller: any;
   private cs: Gpio;
@@ -38,6 +38,16 @@ export default class Lannooleaf {
         if (error) throw error; 
         reslove(); 
       });
+    });
+  }
+
+  Wake(): Promise<void> {
+    return new Promise(resolve => {
+      this.cs.write(0).then(() => {
+        this.cs.write(1).then(() => {
+          resolve();
+        });
+      })
     });
   }
 

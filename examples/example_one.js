@@ -1,4 +1,4 @@
-import Lannooleaf from '../lib/Lannooleaf.js'
+import { Lannooleaf, Color, Graph } from '../lib/index'
 
 const off = new Color(0, 0, 0);
 

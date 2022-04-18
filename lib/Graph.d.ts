@@ -5,7 +5,7 @@ declare class Leaf {
     adj: Map<side, Leaf>;
     constructor(address: number);
 }
-export default class Graph {
+export declare class Graph {
     map: Map<i2c_address, Leaf>;
     constructor();
     AddNode(address: i2c_address): void;
