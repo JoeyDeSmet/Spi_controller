@@ -1,19 +1,19 @@
 import * as spi from 'spi-device';
 import { Gpio } from 'onoff';
 
-import * as lannooleafconst from './LannooleafConsts';
-import Color from './Color';
-import { ColorString } from './Color';
-import Graph from './Graph';
+import * as lannooleafconst from './LannooleafConsts.js';
+import Color from './Color.js';
+import { ColorString } from './Color.js';
+import Graph from './Graph.js';
 
 export default class Lannooleaf {
 
-  private spi_controller: spi.SpiDevice;
+  private spi_controller: any;
   private cs: Gpio;
 
   constructor () {
     this.cs = new Gpio(25, 'out');
-    this.spi_controller = new spi.SpiDevice();
+    this.spi_controller = null;
   }
 
   Init(): Promise<void> {

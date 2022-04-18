@@ -1,4 +1,5 @@
-import Lannooleaf from '../lib/Lannooleaf'
+import Lannooleaf from '../lib/Lannooleaf.js'
+
 const off = new Color(0, 0, 0);
 
 const controller = new Lannooleaf();

@@ -1,6 +1,6 @@
-import Color from './Color';
-import { ColorString } from './Color';
-import Graph from './Graph';
+import Color from './Color.js';
+import { ColorString } from './Color.js';
+import Graph from './Graph.js';
 export default class Lannooleaf {
     private spi_controller;
     private cs;
