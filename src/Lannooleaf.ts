@@ -135,8 +135,10 @@ export class Lannooleaf {
           receiveBuffer: Buffer.alloc(numberOfBytes)
         }];
 
+        this.cs.write(0);
         this.spi_controller.transfer(GetData, (error, message) => {
           if (error) throw error;
+          this.cs.write(1);
           reslove(message![0].receiveBuffer!);
         });
       });
