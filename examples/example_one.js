@@ -1,6 +1,6 @@
-import Lannooleaf from '../lib/Lannooleaf';
-import Color from '../lib/Color';
-import Graph from '../lib/Graph';
+import Lannooleaf from '../lib/Lannooleaf.js';
+import Color from '../lib/Color.js';
+import Graph from '../lib/Graph.js';
 
 const off = new Color(0, 0, 0);
 
