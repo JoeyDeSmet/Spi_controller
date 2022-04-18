@@ -1,4 +1,4 @@
-import Lannooleaf from './src/Lannooleaf.js'
+import Lannooleaf from '../src/Lannooleaf.js'
 
 const controller = new Lannooleaf();
 

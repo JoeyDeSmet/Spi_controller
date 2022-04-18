@@ -1,7 +1,5 @@
-import Lannooleaf from './src/Lannooleaf.js'
-import Color from './src/Color.js'
-
-import Graph from './graph.js';
+import Lannooleaf from '../lib/Lannooleaf'
+import Color from '../lib/Color'
 
 const red = new Color(50, 0, 0);
 const green = new Color(0, 50, 0);
