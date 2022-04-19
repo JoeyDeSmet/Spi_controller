@@ -1,4 +1,4 @@
-import spi from 'spi-device';
+import spi, { SpiMessage } from 'spi-device';
 import { Gpio } from 'onoff';
 
 import * as lannooleafconst from './LannooleafConsts.js';
@@ -53,34 +53,41 @@ export class Lannooleaf {
 
   HelloMessage(): Promise<string> {
     return new Promise(async reslove => {
-      await this.GetData(lannooleafconst.HelloMeassage, 10)
+      await this.GetData(lannooleafconst.HelloMessage, 10)
       .then(data => { reslove(data.toString()); });
     });
   }
 
-  GetAdjList(): Promise<Graph> {
-    return new Promise(async reslove => {
-      let graph: Graph = new Graph();
-      let size: number = 0;
+  GetGraph(graph: Graph): Promise<void> {
+    return new Promise(async resolve => {
+      await this.GetGraphSize()
+      .then(async size => {
+        await this.GetData(lannooleafconst.GetGraphMessage, size)
+        .then(dataBuffer => {
+          
+          if (size == 1) {
+            // No leafs connected only controller
+            graph.AddNode(dataBuffer[0]);
+          } else {
+            let i: number = 0;
 
-      await this.GetAdjListSize().then(data => {
-        size = data;
+            do {
+              graph.AddNode(dataBuffer[i]);
+              i++;
+            } while (dataBuffer[i] != 0x00);
+            
+            i++;
+
+            for (i; i < dataBuffer.length; i += 3) {
+              graph.AddEdge(dataBuffer[i    ],
+                            dataBuffer[i + 1],
+                            dataBuffer[i + 3]);
+            };
+          }
+
+          resolve();
+        });
       });
-
-      await this.GetData(lannooleafconst.GetAdjList, size)
-      .then(data => {
-        let i: number = 0;
-
-        while (data[i] != 0) {
-          graph.AddNode(data[i]);
-          i++;
-        }
-
-        for (i++; i < data.length; i+=3) {
-          graph.AddEdge(data[i], data[i + 1], data[i + 2]);
-        }
-      })
-      .finally(() => { reslove(graph); });
     });
   }
 
@@ -124,22 +131,36 @@ export class Lannooleaf {
     return new Promise(reslove => { this.SendAndResolve(SetLedStringMessage, reslove); });
   }
 
+  ClearLed(led: number): Promise<void> {
+    let clearLedMessage: spi.SpiMessage = [{
+      byteLength: 2,
+      sendBuffer: Buffer.from([lannooleafconst.Commands.clearLed, led])
+    }];
+
+    return new Promise(reslove => { this.SendAndResolve(clearLedMessage, reslove); });
+  }
+
+  ClearAll(): Promise<void> {
+    return new Promise(resolve => { this.SendAndResolve(lannooleafconst.ClearAllMessage, resolve); });
+  }
+
   private GetData(message: spi.SpiMessage, numberOfBytes: number): Promise<Buffer> {
     return new Promise(async reslove => {
-      this.spi_controller.transfer(message, async error => {
+      await this.spi_controller.transfer(message, async (error, message) => {
         if (error) throw error;
-      
-        await this.WaitForDataBegin();
-        let GetData: spi.SpiMessage = [{
-          byteLength: numberOfBytes,
-          receiveBuffer: Buffer.alloc(numberOfBytes)
-        }];
-
-        this.cs.write(0);
-        this.spi_controller.transfer(GetData, (error, message) => {
-          if (error) throw error;
-          this.cs.write(1);
-          reslove(message![0].receiveBuffer!);
+        await this.WaitForDataBegin()
+        .then(() => {
+          let GetData: spi.SpiMessage = [{
+            byteLength: numberOfBytes,
+            receiveBuffer: Buffer.alloc(numberOfBytes),
+          }];
+  
+          this.cs.write(0);
+          this.spi_controller.transfer(GetData, (error, message) => {
+            if (error) throw error;
+            this.cs.write(1);
+            reslove(message![0].receiveBuffer!);
+          });
         });
       });
     });
@@ -154,11 +175,12 @@ export class Lannooleaf {
     });
   }
 
-  private GetAdjListSize(): Promise<number> {
+  private GetGraphSize(): Promise<number> {
     return new Promise(async reslove => { 
-      await this.GetData(lannooleafconst.GetAdjListSize, 2).then(data => {
-        let count = ((data[0] & 0xff) | (data[1] & 0xff));
-        reslove(count);
+      await this.GetData(lannooleafconst.GetGraphSizeMessage, 2)
+      .then(data => {
+        let size = ((data[0] & 0xff) | (data[1] & 0xff));
+        reslove(size);
       });
     });
   }
@@ -166,7 +188,6 @@ export class Lannooleaf {
   private GetOneByte(): Promise<number> {
     return new Promise(async resolve => {
       this.cs.write(0);
-      
       this.spi_controller.transfer(lannooleafconst.GetOneByteMessage, (error, message) => {
         if (error) throw error;
         this.cs.write(1);
@@ -189,5 +210,4 @@ export class Lannooleaf {
       resolve();
     });
   }
-
 }

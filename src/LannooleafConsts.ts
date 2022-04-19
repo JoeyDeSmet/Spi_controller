@@ -6,26 +6,32 @@ export const Commands = {
   getAdjList: 0x03,
   setLed: 0x04,
   setAllLeds: 0x05,
-  setLedString: 0x06
+  setLedString: 0x06,
+  clearLed: 0x07,
+  clearAll: 0x08
 }
 
 export const GetOneByteMessage: spi.SpiMessage = [{
   byteLength: 1,
   sendBuffer: Buffer.from([0xa5]),
-  receiveBuffer: Buffer.alloc(1)
 }];
 
-export const HelloMeassage: spi.SpiMessage = [{
+export const HelloMessage: spi.SpiMessage = [{
   byteLength: 1,
   sendBuffer: Buffer.from([Commands.helloMessage])
 }];
 
-export const GetAdjListSize: spi.SpiMessage = [{
+export const GetGraphSizeMessage: spi.SpiMessage = [{
   byteLength: 1,
   sendBuffer: Buffer.from([Commands.getAdjListSize])
 }];
 
-export const GetAdjList: spi.SpiMessage = [{
+export const GetGraphMessage: spi.SpiMessage = [{
   byteLength: 1,
   sendBuffer: Buffer.from([Commands.getAdjList])
+}];
+
+export const ClearAllMessage: spi.SpiMessage = [{
+  byteLength: 1,
+  sendBuffer: Buffer.from([Commands.clearAll])
 }];
