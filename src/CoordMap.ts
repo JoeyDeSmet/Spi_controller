@@ -90,4 +90,8 @@ export class CoordMap {
     vectorMapping(graph.Get(), new Coordinate(0, 0));
   }
 
+  coordToJson(): string {
+    return JSON.stringify([...this.coordMap.keys()]);
+  }
+
 }

@@ -14,4 +14,5 @@ export declare class Coordinate {
 export declare class CoordMap {
     coordMap: Map<Coordinate, Led>;
     constructor(graph: Graph);
+    coordToJson(): string;
 }

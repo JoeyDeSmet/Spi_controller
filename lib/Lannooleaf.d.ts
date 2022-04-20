@@ -20,4 +20,5 @@ export declare class Lannooleaf {
     private GetGraphSize;
     private GetOneByte;
     private WaitForDataBegin;
+    private sleep;
 }

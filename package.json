@@ -18,7 +18,8 @@
   "scripts": {
     "build": "npx tsc",
     "prepare": "npm run build",
-    "test": "node ./test/test.js"
+    "test": "node ./test/test.js",
+    "wake": "node ./test/wake.js"
   },
   "repository": {
     "type": "git",
