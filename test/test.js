@@ -1,20 +1,20 @@
-import { Lannooleaf, Color, Graph } from "../lib/index.js";
+import { Lannooleaf, Color, Graph, Coordinate, CoordMap } from "../lib/index.js";
 
-const controller = new Lannooleaf();
-await controller.Init();
+// const controller = new Lannooleaf();
+// await controller.Init();
+
+// await controller.SetAll(new Color(255, 0, 0))
 
 const graph = new Graph();
-await controller.GetAdjList(graph);
+graph.AddNode(0xff);
+graph.AddNode(0x09);
 
-var allAddresses = Array.from(graph.map.keys());
+graph.AddEdge(0xff, 1, 0x09);
+graph.AddEdge(0x09, 4, 0xff);
 
-// Set the first led of each connected leaf
-for (const address of allAddresses) {
-  await controller.SetLed(address, 0, new Color(255, 0, 0));
-}
+console.log(graph);
 
-// Generate colorsting of 16 with random colors and send to specific unit
-var colorString = Array(16).fill(new Color(Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255)));
-await controller.SetLedString(allAddresses[0], colorString);
+const map = new CoordMap(graph);
 
-await controller.Destroy();
+console.log(map);
+

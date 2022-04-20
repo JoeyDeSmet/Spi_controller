@@ -1,6 +1,6 @@
 declare type i2c_address = number;
 declare type side = number;
-declare class Leaf {
+export declare class Leaf {
     address: number;
     adj: Map<side, Leaf>;
     constructor(address: number);

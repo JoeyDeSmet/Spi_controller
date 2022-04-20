@@ -9,7 +9,7 @@ export declare class Lannooleaf {
     Destroy(): Promise<void>;
     Wake(): Promise<void>;
     HelloMessage(): Promise<string>;
-    GetAdjList(graph: Graph): Promise<void>;
+    GetGraph(graph: Graph): Promise<void>;
     SetLed(address: number, led: number, color: Color): Promise<void>;
     SetAll(color: Color): Promise<void>;
     SetLedString(address: number, ledstring: ColorString): Promise<void>;
@@ -17,7 +17,7 @@ export declare class Lannooleaf {
     ClearAll(): Promise<void>;
     private GetData;
     private SendAndResolve;
-    private GetAdjListSize;
+    private GetGraphSize;
     private GetOneByte;
     private WaitForDataBegin;
 }

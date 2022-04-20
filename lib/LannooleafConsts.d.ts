@@ -11,6 +11,6 @@ export declare const Commands: {
 };
 export declare const GetOneByteMessage: spi.SpiMessage;
 export declare const HelloMessage: spi.SpiMessage;
-export declare const GetAdjListSizeMessage: spi.SpiMessage;
-export declare const GetAdjListMessage: spi.SpiMessage;
+export declare const GetGraphSizeMessage: spi.SpiMessage;
+export declare const GetGraphMessage: spi.SpiMessage;
 export declare const ClearAllMessage: spi.SpiMessage;

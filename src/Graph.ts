@@ -1,7 +1,7 @@
 type i2c_address = number;
 type side = number;
 
-class Leaf {
+export class Leaf {
 
   public address: number;
   public adj: Map<side, Leaf>;
