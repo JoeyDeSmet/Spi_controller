@@ -33,12 +33,12 @@ export class Coordinate {
 }
 
 const sideDistance = [
-  new Coordinate(-37, 108),
   new Coordinate(-129, -45),
   new Coordinate(-92, -153),
   new Coordinate(37, -108),
   new Coordinate(129, 45),
   new Coordinate(92, 15),
+  new Coordinate(-37, 108),
 ]
 
 const ledCords: Array<Coordinate> = [
@@ -72,14 +72,10 @@ export class CoordMap {
     var vectorMapping = (leaf: Leaf, originCor: Coordinate) => {
       visited.push(leaf.address);
 
-      console.log("Running on " + leaf.address);
-
       // Add each led to Map
       ledCords.forEach((cor, index) => {
         let n_cor = cor;
         n_cor.Add(originCor);
-        console.log("adding: ");
-        console.log(n_cor);
         this.coordMap.set(new Coordinate(n_cor.x, n_cor.y), new Led(leaf.address, index));
       });
 
