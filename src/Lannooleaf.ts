@@ -5,6 +5,7 @@ import * as lannooleafconst from './LannooleafConsts.js';
 import { Color } from './Color.js';
 import { ColorString } from './Color.js';
 import { Graph } from './Graph.js';
+import { buffer } from 'stream/consumers';
 
 export class Lannooleaf {
 
@@ -60,34 +61,115 @@ export class Lannooleaf {
 
   GetGraph(graph: Graph): Promise<void> {
     return new Promise(async resolve => {
-      await this.GetGraphSize()
-      .then(async size => {
-        await this.GetData(lannooleafconst.GetGraphMessage, size)
-        .then(dataBuffer => {
-          
-          if (size == 1) {
-            // No leafs connected only controller
-            graph.AddNode(dataBuffer[0]);
-          } else {
-            let i: number = 0;
+      let message: spi.SpiMessage = [{
+        byteLength: 1,
+        sendBuffer: Buffer.from([0x02])
+      }];
 
-            do {
-              graph.AddNode(dataBuffer[i]);
-              i++;
-            } while (dataBuffer[i] != 0x00);
+      this.spi_controller.transfer(message, async error => {
+        if (error) throw error;
+
+        let byte: number = 1;
+
+        while (byte != 0x00) {
+          await new Promise<void>(res => {
+            let getByte: spi.SpiMessage = [{
+              byteLength: 1,
+              receiveBuffer: Buffer.alloc(1)
+            }];
+
+            this.spi_controller.transfer(getByte, (error, response) => {
+              if (error) throw error;
+
+              byte = response[0].receiveBuffer[0];
+              res();
+            });
+          })
+        }
+
+        let getSize: spi.SpiMessage = [{
+          byteLength: 2,
+          receiveBuffer: Buffer.alloc(2)
+        }];
+
+        this.spi_controller.transfer(getSize, (error, response) => {
+          if (error) throw error;
+          let size = (response[0].receiveBuffer[0] & 0xff) | (response[0].receiveBuffer[1] & 0xff);
+
+          let getGraph: spi.SpiMessage = [{
+            byteLength: 1,
+            sendBuffer: Buffer.from([0x03])
+          }];
+
+          this.spi_controller.transfer(getGraph, (error) => {
+           if (error) throw error;
             
-            i++;
+            let getData: spi.SpiMessage = [{
+              byteLength: size,
+              receiveBuffer: Buffer.alloc(size)
+            }];
+  
+            this.spi_controller.transfer(getData, (error, response) => {
+              if (error) throw error;
+              let dataBuffer = response[0].receiveBuffer;
+  
+              console.log(dataBuffer);
+              if (size == 1) {
+                  // No leafs connected only controller
+                  graph.AddNode(dataBuffer[0]);
+                } else {
+                  let i: number = 0;
+      
+                  do {
+                    graph.AddNode(dataBuffer[i]);
+                    i++;
+                  } while (dataBuffer[i] != 0x00);
+                  
+                  i++;
+      
+                  for (i; i < dataBuffer.length; i += 3) {
+                    graph.AddEdge(dataBuffer[i    ],
+                                  dataBuffer[i + 1],
+                                  dataBuffer[i + 3]);
+                  };
+                }
+  
+              resolve();
+            });
+          })
 
-            for (i; i < dataBuffer.length; i += 3) {
-              graph.AddEdge(dataBuffer[i    ],
-                            dataBuffer[i + 1],
-                            dataBuffer[i + 3]);
-            };
-          }
-
-          resolve();
         });
       });
+      // await this.GetGraphSize()
+      // .then(async size => {
+      //   console.log(size);
+      //   await this.GetData(lannooleafconst.GetGraphMessage, size)
+      //   .then(dataBuffer => {
+          
+      //     if (size == 1) {
+      //       // No leafs connected only controller
+      //       graph.AddNode(dataBuffer[0]);
+      //     } else {
+      //       let i: number = 0;
+
+      //       do {
+      //         graph.AddNode(dataBuffer[i]);
+      //         i++;
+      //       } while (dataBuffer[i] != 0x00);
+            
+      //       i++;
+
+      //       for (i; i < dataBuffer.length; i += 3) {
+      //         graph.AddEdge(dataBuffer[i    ],
+      //                       dataBuffer[i + 1],
+      //                       dataBuffer[i + 3]);
+      //       };
+      //     }
+
+      //     resolve();
+      //   });
+      // });
+    
     });
   }
 
