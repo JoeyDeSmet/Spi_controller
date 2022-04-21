@@ -9,7 +9,7 @@ export declare class Coordinate {
     y: number;
     constructor(x: number, y: number);
     isEqual(cor: Coordinate): Boolean;
-    Add(cor: Coordinate): void;
+    Add(cor: Coordinate): this;
 }
 export declare class CoordMap {
     coordMap: Map<Coordinate, Led>;

@@ -9,7 +9,7 @@
   },
   "name": "lannooleaf_spi_controller",
   "description": "Module to send command over spi to Lannooleaf.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "directories": {
