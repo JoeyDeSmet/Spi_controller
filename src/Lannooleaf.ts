@@ -1,10 +1,13 @@
 import spi from 'spi-device';
 import { Gpio } from 'onoff';
 
+import sharp from 'sharp';
+
 import * as lannooleafconst from './LannooleafConsts.js';
 import { Color } from './Color.js';
 import { ColorString } from './Color.js';
 import { Graph } from './Graph.js';
+import { CoordMap } from './CoordMap.js';
 
 export class Lannooleaf {
 
@@ -23,7 +26,7 @@ export class Lannooleaf {
         
         this.spi_controller.setOptions({
           mode: 3,
-          maxSpeedHz: 1000000,
+          maxSpeedHz: 2000000,
           noChipSelect: true
         },
         error => { if (error) throw error; resolve(); });
@@ -64,6 +67,7 @@ export class Lannooleaf {
       .then(async size => {
         await this.GetData(lannooleafconst.GetGraphMessage, size)
         .then(dataBuffer => {
+          console.log(dataBuffer);
           var i: number = 0;
 
           do {

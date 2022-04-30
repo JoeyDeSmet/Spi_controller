@@ -7,15 +7,17 @@ const graph = new Graph();
 await controller.GetGraph(graph);
 
 const corMap = new CoordMap(graph);
-console.log(corMap.coordToJson()); 
 
-var units = [...graph.map.keys()];
+await controller.SetAll(new Color(0, 0, 0));
 
-for (var address of units) {
-  var randomLedString = Array.from({ length: 16 }, () => { return new Color(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)); });
-  await controller.SetLedString(address, randomLedString);
+for (var key of graph.map.keys()) {
+  if (key != 255) {
+    for (var i = 0; i < key; i++) {
+      console.log("setting led " + i + " of " + key);
+      await controller.SetLed(key, i, new Color(100, 50, 0));
+      await new Promise(resolve => { setTimeout(resolve, 50); });
+    }
+  }
 }
-
-await new Promise(resolve => { setTimeout(resolve, 1000); });
 
 await controller.Destroy();

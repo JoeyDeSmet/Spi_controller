@@ -38,7 +38,7 @@ const sideDistance = [
   new Coordinate(-92, -153),
   new Coordinate(37, -108),
   new Coordinate(129, 45),
-  new Coordinate(92, 15),
+  new Coordinate(92, 153),
   new Coordinate(-37, 108),
 ];
 
@@ -77,17 +77,23 @@ export class CoordMap {
 
       // Add each led to Map
       ledCords.forEach((cor, index) => {
-        const n_cor = new Coordinate(cor.x, cor.y);
+        var n_cor = new Coordinate(cor.x, cor.y);
         n_cor.Add(myOrigin);
+        console.log(myOrigin);
         
+
         this.coordMap.set(new Coordinate(n_cor.x, n_cor.y), new Led(leaf.address, index));
       });
 
       leaf.adj.forEach((adjLeaf, side) => {
         if (!visited.includes(adjLeaf.address)) {
-          const newOrigin = new Coordinate(0, 0);
-          newOrigin.Add(sideDistance[side - 1]).Add(myOrigin);
+          var newOrigin = new Coordinate(0, 0);
 
+          console.log("from: " + leaf.address + " To: " + adjLeaf.address + " Via: " + side);
+          
+          newOrigin.Add(sideDistance[side - 1]).Add(myOrigin);
+          
+          console.log("Origin: [" + newOrigin.x + ", " + newOrigin.y + "]\n");
           vectorMapping(adjLeaf, newOrigin);
         }
       });
@@ -97,7 +103,7 @@ export class CoordMap {
   }
 
   coordToJson(): string {
-    return JSON.stringify([...this.coordMap.keys()]);
+    return JSON.stringify([...this.coordMap]);
   }
 
 }
