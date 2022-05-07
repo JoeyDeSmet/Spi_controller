@@ -26,7 +26,7 @@ export class Lannooleaf {
         
         this.spi_controller.setOptions({
           mode: 3,
-          maxSpeedHz: 2000000,
+          maxSpeedHz: 1000000,
           noChipSelect: true
         },
         error => { if (error) throw error; resolve(); });
