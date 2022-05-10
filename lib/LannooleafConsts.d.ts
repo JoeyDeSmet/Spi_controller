@@ -9,8 +9,8 @@ export declare const Commands: {
     clearLed: number;
     clearAll: number;
 };
-export declare const GetOneByteMessage: spi.SpiMessage;
 export declare const HelloMessage: spi.SpiMessage;
+export declare const GetOneByteMessage: spi.SpiMessage;
 export declare const GetGraphSizeMessage: spi.SpiMessage;
 export declare const GetGraphMessage: spi.SpiMessage;
 export declare const ClearAllMessage: spi.SpiMessage;

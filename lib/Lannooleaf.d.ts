@@ -9,16 +9,13 @@ export declare class Lannooleaf {
     Destroy(): Promise<void>;
     Wake(): Promise<void>;
     HelloMessage(): Promise<string>;
-    GetGraph(graph: Graph): Promise<void>;
+    GetGraph(): Promise<Graph>;
     SetLed(address: number, led: number, color: Color): Promise<void>;
     SetAll(color: Color): Promise<void>;
     SetLedString(address: number, ledstring: ColorString): Promise<void>;
-    ClearLed(led: number): Promise<void>;
+    ClearLed(address: number, led: number): Promise<void>;
     ClearAll(): Promise<void>;
-    private GetData;
-    private SendAndResolve;
-    private GetGraphSize;
     private GetOneByte;
-    private WaitForDataBegin;
-    private sleep;
+    private SendPacket;
+    private GetPacket;
 }

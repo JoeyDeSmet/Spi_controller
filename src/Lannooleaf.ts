@@ -1,13 +1,11 @@
 import spi from 'spi-device';
 import { Gpio } from 'onoff';
 
-import sharp from 'sharp';
-
 import * as lannooleafconst from './LannooleafConsts.js';
 import { Color } from './Color.js';
 import { ColorString } from './Color.js';
 import { Graph } from './Graph.js';
-import { CoordMap } from './CoordMap.js';
+import { Packet } from './Packet.js';
 
 export class Lannooleaf {
 
@@ -55,130 +53,98 @@ export class Lannooleaf {
   }
 
   HelloMessage(): Promise<string> {
-    return new Promise(async reslove => {
-      await this.GetData(lannooleafconst.HelloMessage, 10)
-      .then(data => { reslove(data.toString()); });
+    return new Promise(async resolve => {
+      let pkt = this.GetPacket(lannooleafconst.Commands.helloMessage);
+      resolve(String.fromCharCode(...(await pkt).data));
     });
   }
 
-  GetGraph(graph: Graph): Promise<void> {
+  GetGraph(): Promise<Graph> {
     return new Promise(async resolve => {
-      await this.GetGraphSize()
-      .then(async size => {
-        await this.GetData(lannooleafconst.GetGraphMessage, size)
-        .then(dataBuffer => {
-          console.log(dataBuffer);
-          var i: number = 0;
+      let graph: Graph = new Graph();
 
-          do {
-            graph.AddNode(dataBuffer[i]);
-            i++;
-          } while (dataBuffer[i] != 0);
+      let pkt = await this.GetPacket(lannooleafconst.Commands.getAdjList);
+      let index = 0;
 
-          for (i++; i < dataBuffer.length; i+=3) {
-            graph.AddEdge(dataBuffer[i], dataBuffer[i + 1], dataBuffer[i + 2]);
-          }
-          resolve();
-        });
-      });
+      while (pkt.data[index] != 0x00) {
+        graph.AddNode(pkt.data[index]);
+        index++;
+      }
+
+      index++;
+
+      for (index; index < pkt.data.length; index+=3) {
+        graph.AddEdge(pkt.data[index], pkt.data[index + 1], pkt.data[index + 2]);
+      }
+
+      resolve(graph);
     });
   }
 
   SetLed(address: number, led: number, color: Color): Promise<void> {
-    let SetLedMessage: spi.SpiMessage = [{
-      byteLength: 6,
-      sendBuffer: Buffer.from([lannooleafconst.Commands.setLed, address, led, color.red, color.green, color.blue])
-    }];
+    let pkt: Packet = new Packet(false, lannooleafconst.Commands.setLed, [
+      address,
+      led,
+      color.red,
+      color.green,
+      color.blue
+    ]);
 
-    return new Promise(resolve => { this.SendAndResolve(SetLedMessage, resolve); });
+    return new Promise(async resolve => { 
+      await this.SendPacket(pkt);
+      resolve();
+    });
   }
 
   SetAll(color: Color): Promise<void> {
-    let SetAllMessage: spi.SpiMessage = [{
-      byteLength: 4,
-      sendBuffer: Buffer.from([lannooleafconst.Commands.setAllLeds, color.red, color.green, color.blue])
-    }];
+    let pkt: Packet = new Packet(false, lannooleafconst.Commands.setAllLeds, [
+      color.red,
+      color.green,
+      color.blue
+    ]);
 
-    return new Promise(resolve => { this.SendAndResolve(SetAllMessage, resolve); });
+    return new Promise(async resolve => { 
+      await this.SendPacket(pkt); 
+      resolve();
+    });
   }
 
   SetLedString(address: number, ledstring: ColorString): Promise<void> {
-    let SetLedStringMessage: spi.SpiMessage = [{
-      byteLength: 50,
-      sendBuffer: Buffer.alloc(50)
-    }];
-
     if (ledstring.length > 16) throw new Error("Ledstring can only be of size 16 or less");
 
-    let sendBuffer = SetLedStringMessage[0].sendBuffer;
-    sendBuffer![0] = lannooleafconst.Commands.setLedString;
-    sendBuffer![1] = address;
+    let data = [address];
+    for (var color of ledstring) {
+      data.push(color.red);
+      data.push(color.green);
+      data.push(color.blue);
+    }
 
-    var index = 2;
-    ledstring.forEach(color => {
-      sendBuffer![index    ] = color.red;
-      sendBuffer![index + 1] = color.green;
-      sendBuffer![index + 2] = color.blue;
-      index += 3;
+    let pkt: Packet = new Packet(false, lannooleafconst.Commands.setLedString, data);
+
+    return new Promise(async resolve => { 
+      await this.SendPacket(pkt);
+      resolve();
     });
-
-    return new Promise(reslove => { this.SendAndResolve(SetLedStringMessage, reslove); });
   }
 
-  ClearLed(led: number): Promise<void> {
-    let clearLedMessage: spi.SpiMessage = [{
-      byteLength: 2,
-      sendBuffer: Buffer.from([lannooleafconst.Commands.clearLed, led])
-    }];
+  ClearLed(address: number ,led: number): Promise<void> {
+    let pkt: Packet = new Packet(false, lannooleafconst.Commands.clearLed, [
+      address,
+      led
+    ]);
 
-    return new Promise(reslove => { this.SendAndResolve(clearLedMessage, reslove); });
+    return new Promise(async resolve => { 
+      await this.SendPacket(pkt);
+      resolve();
+    });
   }
 
   ClearAll(): Promise<void> {
-    return new Promise(resolve => { this.SendAndResolve(lannooleafconst.ClearAllMessage, resolve); });
-  }
+    let pkt: Packet = new Packet(false, lannooleafconst.Commands.clearAll, []);
 
-  private GetData(message: spi.SpiMessage, numberOfBytes: number): Promise<Buffer> {
-    return new Promise(async reslove => {
-      this.cs.write(0);
-      await this.spi_controller.transfer(message, async error => {
-        if (error) throw error;
-        this.cs.write(1);
-
-        await this.WaitForDataBegin()
-        .then(() => {
-          let GetData: spi.SpiMessage = [{
-            byteLength: numberOfBytes,
-            receiveBuffer: Buffer.alloc(numberOfBytes),
-          }];
-  
-          this.cs.write(0);
-          this.spi_controller.transfer(GetData, (error, message) => {
-            if (error) throw error;
-            this.cs.write(1);
-            reslove(message![0].receiveBuffer!);
-          });
-        });
-      });
-    });
-  }
-
-  private SendAndResolve(message: spi.SpiMessage, resolve_callback: any): void {
-    this.cs.write(0);
-    this.spi_controller.transfer(message, (error, message) => {
-      if (error) throw error;
-      this.cs.write(1);
-      resolve_callback();
-    });
-  }
-
-  private GetGraphSize(): Promise<number> {
-    return new Promise(async reslove => { 
-      await this.GetData(lannooleafconst.GetGraphSizeMessage, 2)
-      .then(data => {
-        let size = ((data[0] & 0xff) | (data[1] & 0xff));
-        reslove(size);
-      });
+    return new Promise(async resolve => { 
+      await this.SendPacket(pkt);
+      resolve();
     });
   }
 
@@ -193,24 +159,66 @@ export class Lannooleaf {
     });
   }
 
-  private WaitForDataBegin(): Promise<void> {
-    return new Promise(async resolve => {
-      let byte: number;
-      byte = 1;
+  private SendPacket(pkt: Packet): Promise<void> {
+    let message: spi.SpiMessage = [{
+      byteLength:    pkt.Size(),
+      sendBuffer:    pkt.ToBuffer()
+    }];
 
-      while (byte != 0x00) {
-        await this.GetOneByte().then(received_byte => {
-          byte = received_byte;
-        });
-      };
+    return new Promise(resolve => {
 
-      resolve();
+      this.cs.writeSync(0);
+      this.spi_controller.transfer(message, (error, message) => {
+        if (error) throw error;
+        this.cs.writeSync(1);
+
+        resolve();
+      });
     });
   }
 
-  private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => {
-      setTimeout(resolve, ms);
+  private GetPacket(command: number): Promise<Packet> {
+    let requestPkt: Packet = new Packet(true, command, []);
+
+    return new Promise(async resolve => {
+
+      await this.SendPacket(requestPkt);
+
+      console.log(requestPkt);
+
+      const MAXREADS = 255;
+
+      let reads = 0;
+      let currentByte = await this.GetOneByte();
+
+      while (currentByte != 0xa5) {
+        currentByte = await this.GetOneByte();
+        
+        // When max reads have been reached retry, somthing went wrong
+        if (reads++ == MAXREADS) {
+          console.error("Max reads reached");
+          resolve(this.GetPacket(command));
+        } 
+      }
+
+      let receivedCommand = await this.GetOneByte();
+      let dataLenght      = await this.GetOneByte();
+      let data            = [];
+
+      for (var i = 0; i < dataLenght; i++) {
+        data.push(await this.GetOneByte());
+      }
+
+      let checksum = await this.GetOneByte();
+
+      let pkt: Packet = new Packet(false, receivedCommand, data);
+
+      if (!pkt.CheckCheckSum(checksum)) {
+        console.error("Checksum failed");
+        resolve(this.GetPacket(command));
+      } 
+
+      resolve(pkt);
     });
   }
 }

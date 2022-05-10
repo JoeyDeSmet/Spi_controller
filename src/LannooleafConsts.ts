@@ -11,15 +11,15 @@ export const Commands = {
   clearAll: 0x08
 }
 
-export const GetOneByteMessage: spi.SpiMessage = [{
-  byteLength: 1,
-  sendBuffer: Buffer.from([0xa5]),
-  receiveBuffer: Buffer.alloc(1)
-}];
-
 export const HelloMessage: spi.SpiMessage = [{
   byteLength: 1,
   sendBuffer: Buffer.from([Commands.helloMessage])
+}];
+
+export const GetOneByteMessage: spi.SpiMessage = [{
+  byteLength: 1,
+  sendBuffer: Buffer.from([0xff]),
+  receiveBuffer: Buffer.alloc(1)
 }];
 
 export const GetGraphSizeMessage: spi.SpiMessage = [{
